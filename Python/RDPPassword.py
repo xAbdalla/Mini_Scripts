@@ -43,35 +43,50 @@ def RunShell(command):
     #print("OUT", process.stdout)
     return process.stdout
 
-if (len(sys.argv) != 2):
-    RDP_file = input("Enter the RDP file: ")
-else:
-    RDP_file = sys.argv[1]
+print("\nRDP Password Inserter\n")
+print("This script will insert the username and password into the RDP file.")
+print("The password will be encrypted into byte stream and stored in the RDP file.")
+print("The encrypted password can be used only on the same machine where it was created.")
+print("Note: The byte stream can be decrypted, so keep the RDP file secure.")
+print()
 
-if not os.path.exists(RDP_file):
-    print("\nFile '%s' not found.\n" % RDP_file)
-    exit(1)
+while True:
+    if (len(sys.argv) != 2):
+        RDP_file = input("Enter the RDP file: ")
+    else:
+        RDP_file = sys.argv[1]
 
-if not RDP_file.lower().endswith(".rdp"):
-    print("\nFile '%s' is not RDP file.\n" % RDP_file)
-    exit(1)
+    if not os.path.exists(RDP_file):
+        print("\nFile '%s' not found.\n" % RDP_file)
+        exit(1)
 
-print("\nInserting username/password into '%s'" % RDP_file)
-username = input("Username: ")
-password = input("Password: ")
+    if not RDP_file.lower().endswith(".rdp"):
+        print("\nFile '%s' is not RDP file.\n" % RDP_file)
+        exit(1)
 
-#use this if you do not want the password to be seen while typing
-# while True:
-#     password = getpass.getpass("Password: ")
-#     password2 = getpass.getpass("Confirm Password: ")
-#     if password == password2:
-#         break
-#     else:
-#         print("Passwords do not match. Please try again.\n")
+    print("\nInserting username/password into '%s'" % RDP_file)
+    username = input("Username: ")
+    password = input("Password: ")
 
-PassCmd = "('%s' | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString;" % password
-password = RunShell(PassCmd)
+    #use this if you do not want the password to be seen while typing
+    # while True:
+    #     password = getpass.getpass("Password: ")
+    #     password2 = getpass.getpass("Confirm Password: ")
+    #     if password == password2:
+    #         break
+    #     else:
+    #         print("Passwords do not match. Please try again.\n")
 
-InsertPassword(RDP_file, username, password)
+    PassCmd = "('%s' | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString;" % password
+    password = RunShell(PassCmd)
 
-print("\nDone.\n")
+    InsertPassword(RDP_file, username, password)
+
+    print("\nDone.\n")
+
+    x = input("Do you want to edit another RDP file? (Y/N): ")
+    if x.lower() in ["y", "yes", "1"]:
+        print("="*50, end="\n\n")
+        continue
+    else:
+        break
